@@ -64,6 +64,22 @@ static esp_err_t event_handler(void *ctx, system_event_t *event)
 static void initialise_wifi(void)
 {
     tcpip_adapter_init();
+
+    /* Setup with static IP addr ----------------------------------- */
+    tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA);
+
+    tcpip_adapter_ip_info_t ipInfo;
+    int sekiji = 0; //  sekiji を 各自の席次に書き換えてください。
+    IP4_ADDR(&ipInfo.ip, 172,16,11, 70+sekiji);    
+    IP4_ADDR(&ipInfo.gw, 172,16,11,251);
+    IP4_ADDR(&ipInfo.netmask, 255,255,255,0);
+    tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
+
+    ip_addr_t dnsserver;
+    IP_ADDR4( &dnsserver, 172,16,11,251);
+    dns_setserver(0, &dnsserver);
+    /* End of setup with static IP addr ----------------------------- */
+
     wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
