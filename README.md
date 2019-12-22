@@ -2,4 +2,4 @@
 
 Uses a POSIX socket to make a very simple HTTP request.
 
-See the README.md file in the upper level 'examples' directory for more information about examples.
+The request sends ADC value to a web server using GET request.
