@@ -32,11 +32,11 @@ static EventGroupHandle_t wifi_event_group;
    to the AP with an IP? */
 const int CONNECTED_BIT = BIT0;
 
-#define WIFI_SSID "ICTEX51"
-#define WIFI_PASS "espwroom32"
-#define WEB_SERVER "haselab.net"
-#define WEB_PORT 80
-#define WEB_URL "http://haselab.net/class/ictex5.php?ADC="
+#define WIFI_SSID "ICT-EX5"
+#define WIFI_PASS "embedded"
+#define WEB_SERVER "10.0.0.1"
+#define WEB_URL "http://10.0.0.1:5000/getadc?ADC="
+#define WEB_PORT "5000"
 
 static const char *TAG = "example";
 
@@ -65,12 +65,13 @@ static void initialise_wifi(void)
 {
     tcpip_adapter_init();
 
+    #if 0
     /* Setup with static IP addr ----------------------------------- */
     tcpip_adapter_dhcpc_stop(TCPIP_ADAPTER_IF_STA);
 
     tcpip_adapter_ip_info_t ipInfo;
     int sekiji = 0; //  sekiji を 各自の席次に書き換えてください。
-    IP4_ADDR(&ipInfo.ip, 172,16,11, 70+sekiji);    
+    IP4_ADDR(&ipInfo.ip, 172,16,11, 70+sekiji);
     IP4_ADDR(&ipInfo.gw, 172,16,11,251);
     IP4_ADDR(&ipInfo.netmask, 255,255,255,0);
     tcpip_adapter_set_ip_info(TCPIP_ADAPTER_IF_STA, &ipInfo);
@@ -79,13 +80,14 @@ static void initialise_wifi(void)
     IP_ADDR4( &dnsserver, 172,16,11,251);
     dns_setserver(0, &dnsserver);
     /* End of setup with static IP addr ----------------------------- */
+    #endif
 
     wifi_event_group = xEventGroupCreate();
     ESP_ERROR_CHECK( esp_event_loop_init(event_handler, NULL) );
     wifi_init_config_t cfg = WIFI_INIT_CONFIG_DEFAULT();
     ESP_ERROR_CHECK( esp_wifi_init(&cfg) );
     ESP_ERROR_CHECK( esp_wifi_set_storage(WIFI_STORAGE_RAM) );
-    wifi_config_t wifi_config = 
+    wifi_config_t wifi_config =
     {
         .sta = {
             .ssid = WIFI_SSID,
@@ -125,7 +127,7 @@ static void http_get_task(void *pvParameters)
                             false, true, portMAX_DELAY);
         ESP_LOGI(TAG, "Connected to AP");
 
-        int err = getaddrinfo(WEB_SERVER, "80", &hints, &res);
+        int err = getaddrinfo(WEB_SERVER, WEB_PORT, &hints, &res);
 
         if(err != 0 || res == NULL) {
             ESP_LOGE(TAG, "DNS lookup failed err=%d res=%p", err, res);
@@ -160,7 +162,7 @@ static void http_get_task(void *pvParameters)
         freeaddrinfo(res);
 
         ad = adc1_get_raw(ADC1_CHANNEL_6);
-        
+
         strcpy(REQUEST, REQUEST1);
         sprintf(REQUEST + strlen(REQUEST), "%d", ad);
         strcat(REQUEST, REQUEST2);
