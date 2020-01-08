@@ -35,8 +35,8 @@ const int CONNECTED_BIT = BIT0;
 #define WIFI_SSID "ICT-EX5"
 #define WIFI_PASS "embedded"
 #define WEB_SERVER "10.0.0.1"
-#define WEB_URL "http://10.0.0.1:5000/getadc?ADC="
-#define WEB_PORT "5000"
+#define WEB_URL "http://10.0.0.1:50000/getadc?ADC="
+#define WEB_PORT "50000"
 
 static const char *TAG = "example";
 
